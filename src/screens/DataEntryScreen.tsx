@@ -1,95 +1,81 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { Text, Card, Button } from 'react-native-paper';
+import React, { useState } from 'react';
+import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
-import { t } from '@/localization';
-import { hebrewTextStyle } from '@/styles/theme';
-import { StudentRecord } from '@/types';
-import { calculateTotalScore } from '@/utils/scoring';
-import { FIELD_LABELS } from '@/constants';
+import { StudentDataForm } from '@/components/forms';
+import { StudentRecord, AutocompleteItem } from '@/types';
+import { RootStackParamList } from '@/navigation/AppNavigator';
+
+type DataEntryScreenRouteProp = RouteProp<RootStackParamList, 'DataEntry'>;
+type DataEntryScreenNavigationProp = StackNavigationProp<RootStackParamList, 'DataEntry'>;
 
 const DataEntryScreen: React.FC = () => {
-  const [formData, setFormData] = useState<Partial<StudentRecord>>({
-    תאריך: new Date().toISOString().split('T')[0], // Today's date
-    שם_התלמיד: '',
-    שם_הכיתה: '',
-    מספר_השיעור: 1,
-    כניסה: 0,
-    שהייה: 0,
-    אווירה: 0,
-    ביצוע: 0,
-    מטרה_אישית: 0,
-    בונוס: 0,
-    הערות: '',
-  });
+  const navigation = useNavigation<DataEntryScreenNavigationProp>();
+  const route = useRoute<DataEntryScreenRouteProp>();
+  
+  // Mock data for testing - will be replaced with Google Sheets integration
+  const [studentSuggestions] = useState<AutocompleteItem[]>([
+    { id: '1', label: 'אברהם כהן', value: 'אברהם כהן' },
+    { id: '2', label: 'שרה לוי', value: 'שרה לוי' },
+    { id: '3', label: 'דוד מלכה', value: 'דוד מלכה' },
+    { id: '4', label: 'רחל אברהם', value: 'רחל אברהם' },
+  ]);
 
-  const [totalScore, setTotalScore] = useState(0);
+  const [classSuggestions] = useState<AutocompleteItem[]>([
+    { id: '1', label: 'מתמטיקה א', value: 'מתמטיקה א' },
+    { id: '2', label: 'עברית ב', value: 'עברית ב' },
+    { id: '3', label: 'היסטוריה', value: 'היסטוריה' },
+    { id: '4', label: 'מדעים', value: 'מדעים' },
+  ]);
 
-  useEffect(() => {
-    const score = calculateTotalScore(formData);
-    setTotalScore(score);
-  }, [formData]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSave = async () => {
+  const handleSubmit = async (data: StudentRecord, isUpdate: boolean) => {
+    setIsLoading(true);
     try {
-      // TODO: Implement Google Sheets save logic
-      console.log('Saving data:', { ...formData, סהכ: totalScore });
+      // TODO: Implement Google Sheets save/update logic
+      console.log('Submitting data:', data);
+      console.log('Is update:', isUpdate);
+      
+      // Mock delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Navigate back to home
+      navigation.navigate('Home');
     } catch (error) {
-      console.error('Save error:', error);
+      console.error('Submit error:', error);
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleCancel = () => {
+    navigation.goBack();
+  };
+
+  const handleLoadStudentSuggestions = (query: string) => {
+    // TODO: Load suggestions from Google Sheets
+    console.log('Loading student suggestions for:', query);
+  };
+
+  const handleLoadClassSuggestions = (query: string) => {
+    // TODO: Load suggestions from Google Sheets
+    console.log('Loading class suggestions for:', query);
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.content}>
-          {/* Score Display Card */}
-          <Card style={styles.scoreCard}>
-            <Card.Content>
-              <Text variant="titleLarge" style={[styles.scoreTitle, hebrewTextStyle]}>
-                {t('currentScore')}
-              </Text>
-              <Text variant="headlineLarge" style={[styles.scoreValue, hebrewTextStyle]}>
-                {totalScore} / 11
-              </Text>
-              <Text variant="bodyMedium" style={[styles.scoreLabel, hebrewTextStyle]}>
-                {t('points')}
-              </Text>
-            </Card.Content>
-          </Card>
-
-          {/* Form Fields Placeholder */}
-          <Card style={styles.formCard}>
-            <Card.Content>
-              <Text variant="titleMedium" style={[styles.formTitle, hebrewTextStyle]}>
-                {t('dataEntry')}
-              </Text>
-              
-              {/* Placeholder for form fields */}
-              <View style={styles.formPlaceholder}>
-                <Text style={[styles.placeholderText, hebrewTextStyle]}>
-                  טופס הזנת נתונים יתווסף בשלב הבא
-                </Text>
-                <Text style={[styles.placeholderSubtext, hebrewTextStyle]}>
-                  כולל 11 שדות קלט עבריים עם אימות מלא
-                </Text>
-              </View>
-
-              <Button
-                mode="contained"
-                onPress={handleSave}
-                style={styles.saveButton}
-                contentStyle={styles.buttonContent}
-              >
-                <Text style={hebrewTextStyle}>
-                  {t('save')}
-                </Text>
-              </Button>
-            </Card.Content>
-          </Card>
-        </View>
-      </ScrollView>
+      <StudentDataForm
+        onSubmit={handleSubmit}
+        onCancel={handleCancel}
+        studentSuggestions={studentSuggestions}
+        classSuggestions={classSuggestions}
+        onLoadStudentSuggestions={handleLoadStudentSuggestions}
+        onLoadClassSuggestions={handleLoadClassSuggestions}
+        isLoading={isLoading}
+      />
     </SafeAreaView>
   );
 };
@@ -98,61 +84,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  content: {
-    padding: 20,
-  },
-  scoreCard: {
-    marginBottom: 20,
-    elevation: 4,
-    backgroundColor: '#2196F3',
-  },
-  scoreTitle: {
-    textAlign: 'center',
-    color: '#FFFFFF',
-    marginBottom: 10,
-  },
-  scoreValue: {
-    textAlign: 'center',
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-  },
-  scoreLabel: {
-    textAlign: 'center',
-    color: '#FFFFFF',
-    opacity: 0.8,
-  },
-  formCard: {
-    elevation: 2,
-  },
-  formTitle: {
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  formPlaceholder: {
-    padding: 40,
-    alignItems: 'center',
-    backgroundColor: '#F8F9FA',
-    borderRadius: 8,
-    marginBottom: 20,
-  },
-  placeholderText: {
-    textAlign: 'center',
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  placeholderSubtext: {
-    textAlign: 'center',
-    opacity: 0.6,
-  },
-  saveButton: {
-    marginTop: 10,
-  },
-  buttonContent: {
-    height: 50,
   },
 });
 
