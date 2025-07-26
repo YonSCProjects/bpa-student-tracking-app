@@ -1,0 +1,42 @@
+{
+  "name": "BPAStudentTracking",
+  "displayName": "BPApp - מעקב תלמידים",
+  "description": "מערכת מעקב תלמידים בעברית עם סנכרון Google Sheets",
+  "version": "1.0.0",
+  "buildNumber": "1",
+  "orientation": "portrait",
+  "icon": "./assets/icon.png",
+  "splash": {
+    "image": "./assets/splash.png",
+    "resizeMode": "contain",
+    "backgroundColor": "#2196F3"
+  },
+  "platforms": ["ios", "android"],
+  "assetBundlePatterns": [
+    "**/*"
+  ],
+  "ios": {
+    "supportsTablet": true,
+    "bundleIdentifier": "com.bpapp.studenttracking",
+    "buildNumber": "1",
+    "infoPlist": {
+      "CFBundleLocalizations": ["he", "en"],
+      "CFBundleDevelopmentRegion": "he"
+    }
+  },
+  "android": {
+    "adaptiveIcon": {
+      "foregroundImage": "./assets/adaptive-icon.png",
+      "backgroundColor": "#2196F3"
+    },
+    "package": "com.bpapp.studenttracking",
+    "versionCode": 1,
+    "permissions": [
+      "android.permission.INTERNET",
+      "android.permission.ACCESS_NETWORK_STATE"
+    ]
+  },
+  "localization": {
+    "he": "./assets/localization/he.json"
+  }
+}

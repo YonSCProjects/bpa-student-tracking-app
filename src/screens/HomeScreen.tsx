@@ -9,6 +9,7 @@ import { t } from '@/localization';
 import { hebrewTextStyle } from '@/styles/theme';
 import { useAuthStore } from '@/store/authStore';
 import { RootStackParamList } from '@/navigation/AppNavigator';
+import { SyncStatus } from '@/components/common';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -55,6 +56,8 @@ const HomeScreen: React.FC = () => {
             </Button>
           </Card.Content>
         </Card>
+
+        <SyncStatus compact />
 
         <View style={styles.footer}>
           <Button
