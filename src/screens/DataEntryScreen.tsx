@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp, useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 import { StudentDataForm } from '@/components/forms';
-import { StudentRecord, AutocompleteItem } from '@/types';
+import { StudentRecord } from '@/types';
 import { RootStackParamList } from '@/navigation/AppNavigator';
+import { useGoogleSheets } from '@/hooks/useGoogleSheets';
+import { useDataStore } from '@/store/dataStore';
 
 type DataEntryScreenRouteProp = RouteProp<RootStackParamList, 'DataEntry'>;
 type DataEntryScreenNavigationProp = StackNavigationProp<RootStackParamList, 'DataEntry'>;
@@ -15,66 +17,123 @@ const DataEntryScreen: React.FC = () => {
   const navigation = useNavigation<DataEntryScreenNavigationProp>();
   const route = useRoute<DataEntryScreenRouteProp>();
   
-  // Mock data for testing - will be replaced with Google Sheets integration
-  const [studentSuggestions] = useState<AutocompleteItem[]>([
-    { id: '1', label: 'אברהם כהן', value: 'אברהם כהן' },
-    { id: '2', label: 'שרה לוי', value: 'שרה לוי' },
-    { id: '3', label: 'דוד מלכה', value: 'דוד מלכה' },
-    { id: '4', label: 'רחל אברהם', value: 'רחל אברהם' },
-  ]);
+  const {
+    studentSuggestions,
+    classSuggestions,
+    isSaving,
+    findMatchingRecord,
+    saveRecord,
+    getNextClassNumber,
+    loadStudentSuggestions,
+    loadClassSuggestions,
+  } = useGoogleSheets();
 
-  const [classSuggestions] = useState<AutocompleteItem[]>([
-    { id: '1', label: 'מתמטיקה א', value: 'מתמטיקה א' },
-    { id: '2', label: 'עברית ב', value: 'עברית ב' },
-    { id: '3', label: 'היסטוריה', value: 'היסטוריה' },
-    { id: '4', label: 'מדעים', value: 'מדעים' },
-  ]);
+  const { 
+    currentRecord, 
+    isEditMode, 
+    setCurrentRecord, 
+    setEditMode 
+  } = useDataStore();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [initialFormData, setInitialFormData] = useState<Partial<StudentRecord> | undefined>();
+
+  // Check for record matching on form field changes
+  const checkForMatchingRecord = useCallback(async (
+    תאריך: string,
+    שם_התלמיד: string,
+    שם_הכיתה: string,
+    מספר_השיעור: number
+  ) => {
+    if (!תאריך || !שם_התלמיד || !שם_הכיתה || !מספר_השיעור) return;
+
+    try {
+      const existingRecord = await findMatchingRecord(
+        תאריך,
+        שם_התלמיד,
+        שם_הכיתה,
+        מספר_השיעור
+      );
+
+      if (existingRecord) {
+        setCurrentRecord(existingRecord);
+        setEditMode(true);
+        setInitialFormData(existingRecord);
+      } else {
+        setEditMode(false);
+        setCurrentRecord(null);
+      }
+    } catch (error) {
+      console.error('Error checking for matching record:', error);
+    }
+  }, [findMatchingRecord, setCurrentRecord, setEditMode]);
+
+  // Initialize form with smart defaults
+  useFocusEffect(
+    useCallback(() => {
+      const initializeForm = async () => {
+        const today = new Date().toISOString().split('T')[0];
+        const nextClassNumber = await getNextClassNumber(today);
+
+        const defaultData: Partial<StudentRecord> = {
+          תאריך: today,
+          מספר_השיעור: nextClassNumber,
+          שם_התלמיד: '',
+          שם_הכיתה: '',
+          כניסה: 0,
+          שהייה: 0,
+          אווירה: 0,
+          ביצוע: 0,
+          מטרה_אישית: 0,
+          בונוס: 0,
+          הערות: '',
+        };
+
+        setInitialFormData(defaultData);
+        setCurrentRecord(null);
+        setEditMode(false);
+      };
+
+      initializeForm();
+    }, [getNextClassNumber, setCurrentRecord, setEditMode])
+  );
 
   const handleSubmit = async (data: StudentRecord, isUpdate: boolean) => {
-    setIsLoading(true);
     try {
-      // TODO: Implement Google Sheets save/update logic
-      console.log('Submitting data:', data);
-      console.log('Is update:', isUpdate);
+      const success = await saveRecord(data, isUpdate || isEditMode);
       
-      // Mock delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Navigate back to home
-      navigation.navigate('Home');
+      if (success) {
+        // Clear form state
+        setCurrentRecord(null);
+        setEditMode(false);
+        
+        // Navigate back to home
+        navigation.navigate('Home');
+      }
     } catch (error) {
       console.error('Submit error:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const handleCancel = () => {
+    setCurrentRecord(null);
+    setEditMode(false);
     navigation.goBack();
   };
 
-  const handleLoadStudentSuggestions = (query: string) => {
-    // TODO: Load suggestions from Google Sheets
-    console.log('Loading student suggestions for:', query);
-  };
-
-  const handleLoadClassSuggestions = (query: string) => {
-    // TODO: Load suggestions from Google Sheets
-    console.log('Loading class suggestions for:', query);
-  };
+  // Enhanced form data with auto-population
+  const formDataWithAutoPopulation = currentRecord || initialFormData;
 
   return (
     <SafeAreaView style={styles.container}>
       <StudentDataForm
+        initialData={formDataWithAutoPopulation}
         onSubmit={handleSubmit}
         onCancel={handleCancel}
         studentSuggestions={studentSuggestions}
         classSuggestions={classSuggestions}
-        onLoadStudentSuggestions={handleLoadStudentSuggestions}
-        onLoadClassSuggestions={handleLoadClassSuggestions}
-        isLoading={isLoading}
+        onLoadStudentSuggestions={loadStudentSuggestions}
+        onLoadClassSuggestions={loadClassSuggestions}
+        isLoading={isSaving}
       />
     </SafeAreaView>
   );
