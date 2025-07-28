@@ -16,9 +16,9 @@ const SyncStatus: React.FC<SyncStatusProps> = ({ compact = false }) => {
 
   useEffect(() => {
     loadPendingCount();
-    
+
     const interval = setInterval(loadPendingCount, 5000); // Check every 5 seconds
-    
+
     // Subscribe to sync completion
     const unsubscribe = syncService.onSyncComplete((result) => {
       setLastSyncResult(result);
@@ -43,8 +43,8 @@ const SyncStatus: React.FC<SyncStatusProps> = ({ compact = false }) => {
   };
 
   const handleSync = async () => {
-    if (isSyncing) return;
-    
+    if (isSyncing) {return;}
+
     setIsSyncing(true);
     try {
       await syncService.syncPendingRecords();
@@ -91,7 +91,7 @@ const SyncStatus: React.FC<SyncStatusProps> = ({ compact = false }) => {
             <Text style={[styles.sectionText, hebrewTextStyle]}>
               {pendingCount} רישומים ממתינים לסנכרון
             </Text>
-            
+
             <Button
               mode="contained"
               onPress={handleSync}
@@ -111,7 +111,7 @@ const SyncStatus: React.FC<SyncStatusProps> = ({ compact = false }) => {
             <Text variant="bodySmall" style={[styles.resultText, hebrewTextStyle]}>
               סנכרון אחרון: {lastSyncResult.synced} הצליחו, {lastSyncResult.failed} נכשלו
             </Text>
-            
+
             {lastSyncResult.errors.length > 0 && (
               <View style={styles.errorContainer}>
                 {lastSyncResult.errors.slice(0, 3).map((error, index) => (

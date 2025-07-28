@@ -18,12 +18,12 @@ class GoogleAuthService {
   private isConfigured = false;
 
   async configure(): Promise<void> {
-    if (this.isConfigured) return;
+    if (this.isConfigured) {return;}
 
     try {
       await GoogleSignin.configure({
         scopes: GOOGLE_SCOPES,
-        webClientId: process.env.GOOGLE_WEB_CLIENT_ID, // from Google Console
+        webClientId: '302221962392-t5uk1tmp6bcoem1bhr69accg02nlmneg.apps.googleusercontent.com', // from google-services.json
         offlineAccess: true, // to get refresh token
         hostedDomain: '', // specify domain if needed
         forceCodeForRefreshToken: true,
@@ -38,10 +38,10 @@ class GoogleAuthService {
   async signIn(): Promise<{ user: GoogleUser; tokens: GoogleTokens }> {
     try {
       await this.configure();
-      
+
       // Check if device supports Google Play Services
       await GoogleSignin.hasPlayServices();
-      
+
       const userInfo = await GoogleSignin.signIn();
       const tokens = await GoogleSignin.getTokens();
 
@@ -54,14 +54,14 @@ class GoogleAuthService {
 
       const authTokens: GoogleTokens = {
         accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken,
-        idToken: tokens.idToken,
+        refreshToken: (tokens as any).refreshToken,
+        idToken: (tokens as any).idToken,
       };
 
       return { user, tokens: authTokens };
     } catch (error: any) {
       console.error('Google Sign-In failed:', error);
-      
+
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         throw new Error('Sign-in was cancelled by user');
       } else if (error.code === statusCodes.IN_PROGRESS) {
@@ -87,7 +87,7 @@ class GoogleAuthService {
   async getCurrentUser(): Promise<GoogleUser | null> {
     try {
       const userInfo = await GoogleSignin.signInSilently();
-      
+
       return {
         id: userInfo.user.id,
         email: userInfo.user.email,
@@ -103,11 +103,11 @@ class GoogleAuthService {
   async getTokens(): Promise<GoogleTokens | null> {
     try {
       const tokens = await GoogleSignin.getTokens();
-      
+
       return {
         accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken,
-        idToken: tokens.idToken,
+        refreshToken: (tokens as any).refreshToken,
+        idToken: (tokens as any).idToken,
       };
     } catch (error) {
       console.error('Failed to get tokens:', error);
@@ -127,7 +127,8 @@ class GoogleAuthService {
 
   async isSignedIn(): Promise<boolean> {
     try {
-      return await GoogleSignin.isSignedIn();
+      const signedIn = await GoogleSignin.hasPlayServices();
+      return signedIn;
     } catch (error) {
       return false;
     }

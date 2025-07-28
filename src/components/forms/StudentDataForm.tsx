@@ -68,7 +68,7 @@ const StudentDataForm: React.FC<StudentDataFormProps> = ({
 
   const updateField = useCallback((field: keyof StudentRecord, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    
+
     // Clear field error when user starts typing
     if (errors.length > 0) {
       setErrors(prev => prev.filter(error => error.field !== field));
@@ -77,7 +77,7 @@ const StudentDataForm: React.FC<StudentDataFormProps> = ({
 
   const handleSubmit = () => {
     const validation = validateStudentRecord(formData);
-    
+
     if (!validation.isValid) {
       setErrors(validation.errors);
       return;
@@ -162,7 +162,7 @@ const StudentDataForm: React.FC<StudentDataFormProps> = ({
           />
 
           <Divider style={styles.divider} />
-          
+
           <Text variant="titleMedium" style={[styles.sectionTitle, hebrewTextStyle]}>
             הערכת ביצועים
           </Text>
@@ -248,7 +248,7 @@ const StudentDataForm: React.FC<StudentDataFormProps> = ({
             <Text style={hebrewTextStyle}>{t('cancel')}</Text>
           </Button>
         )}
-        
+
         <Button
           mode="contained"
           onPress={handleSubmit}

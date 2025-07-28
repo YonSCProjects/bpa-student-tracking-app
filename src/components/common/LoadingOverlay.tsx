@@ -14,7 +14,7 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
   message = 'טוען...',
   transparent = false,
 }) => {
-  if (!visible) return null;
+  if (!visible) {return null;}
 
   return (
     <Portal>
@@ -23,18 +23,18 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
         dismissable={false}
         contentContainerStyle={[
           styles.container,
-          transparent && styles.transparent
+          transparent && styles.transparent,
         ]}
       >
         <View style={styles.content}>
-          <ActivityIndicator 
-            size="large" 
-            color="#2196F3" 
+          <ActivityIndicator
+            size="large"
+            color="#2196F3"
             style={styles.indicator}
           />
           {message && (
-            <Text 
-              variant="bodyLarge" 
+            <Text
+              variant="bodyLarge"
               style={[styles.message, hebrewTextStyle]}
             >
               {message}

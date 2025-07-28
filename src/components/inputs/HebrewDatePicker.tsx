@@ -59,7 +59,7 @@ const HebrewDatePicker: React.FC<HebrewDatePickerProps> = ({
           mode="outlined"
         />
       </TouchableOpacity>
-      
+
       {error && (
         <Text style={[styles.errorText, hebrewTextStyle]}>
           {error}
@@ -77,17 +77,16 @@ const HebrewDatePicker: React.FC<HebrewDatePickerProps> = ({
               <Text variant="titleMedium" style={[styles.modalTitle, hebrewTextStyle]}>
                 {t('date')}
               </Text>
-              
+
               <View style={styles.datePickerContainer}>
                 <DatePicker
                   date={selectedDate}
                   onDateChange={setSelectedDate}
                   mode="date"
                   locale="he"
-                  textColor="#000000"
                 />
               </View>
-              
+
               <View style={styles.modalActions}>
                 <Button
                   mode="outlined"
@@ -96,7 +95,7 @@ const HebrewDatePicker: React.FC<HebrewDatePickerProps> = ({
                 >
                   <Text style={hebrewTextStyle}>{t('cancel')}</Text>
                 </Button>
-                
+
                 <Button
                   mode="contained"
                   onPress={() => handleDateConfirm(selectedDate)}

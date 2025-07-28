@@ -34,7 +34,7 @@ const RecordMatchingForm: React.FC<RecordMatchingFormProps> = ({
         <Text variant="titleMedium" style={[styles.title, hebrewTextStyle]}>
           {t('recordFound')}
         </Text>
-        
+
         <Text variant="bodyMedium" style={[styles.subtitle, hebrewTextStyle]}>
           נמצא רישום קיים עם הפרטים הבאים:
         </Text>

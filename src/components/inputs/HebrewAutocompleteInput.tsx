@@ -39,7 +39,7 @@ const HebrewAutocompleteInput: React.FC<HebrewAutocompleteInputProps> = ({
       );
       setFilteredSuggestions(filtered);
       setShowSuggestions(isFocused && filtered.length > 0);
-      
+
       // Load more suggestions if callback provided
       if (onLoadSuggestions) {
         onLoadSuggestions(value);
@@ -99,7 +99,7 @@ const HebrewAutocompleteInput: React.FC<HebrewAutocompleteInputProps> = ({
         placeholder={placeholder}
         right={showSuggestions ? <TextInput.Icon icon="menu-down" /> : null}
       />
-      
+
       {error && (
         <Text style={[styles.errorText, hebrewTextStyle]}>
           {error}
@@ -112,10 +112,9 @@ const HebrewAutocompleteInput: React.FC<HebrewAutocompleteInputProps> = ({
             data={filteredSuggestions}
             renderItem={renderSuggestion}
             keyExtractor={(item) => item.id}
-            style={styles.suggestionsList}
+            style={[styles.suggestionsList, { maxHeight: 200 }]}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
-            maxHeight={200}
           />
         </Card>
       )}

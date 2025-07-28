@@ -43,7 +43,7 @@ class OfflineStorageService {
   async addPendingRecord(record: StudentRecord, isUpdate: boolean = false): Promise<string> {
     try {
       const pendingRecords = await this.getPendingRecords();
-      
+
       const pendingRecord: PendingRecord = {
         ...record,
         id: `pending_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -54,7 +54,7 @@ class OfflineStorageService {
 
       pendingRecords.push(pendingRecord);
       await AsyncStorage.setItem(KEYS.PENDING_RECORDS, JSON.stringify(pendingRecords));
-      
+
       return pendingRecord.id;
     } catch (error) {
       console.error('Failed to add pending record:', error);
@@ -86,7 +86,7 @@ class OfflineStorageService {
     try {
       const pendingRecords = await this.getPendingRecords();
       const recordIndex = pendingRecords.findIndex(record => record.id === id);
-      
+
       if (recordIndex !== -1) {
         pendingRecords[recordIndex].syncAttempts += 1;
         await AsyncStorage.setItem(KEYS.PENDING_RECORDS, JSON.stringify(pendingRecords));
@@ -141,7 +141,7 @@ class OfflineStorageService {
   async isCacheExpired(): Promise<boolean> {
     try {
       const lastSync = await AsyncStorage.getItem(KEYS.LAST_SYNC);
-      if (!lastSync) return true;
+      if (!lastSync) {return true;}
 
       const settings = await this.getAppSettings();
       const expiryTime = settings.cacheExpiry * 60 * 60 * 1000; // Convert hours to milliseconds
@@ -242,7 +242,7 @@ class OfflineStorageService {
         AsyncStorage.getItem(KEYS.LAST_SYNC),
       ]);
 
-      const cacheAge = lastSync 
+      const cacheAge = lastSync
         ? Math.floor((Date.now() - parseInt(lastSync)) / (1000 * 60 * 60))
         : 0;
 

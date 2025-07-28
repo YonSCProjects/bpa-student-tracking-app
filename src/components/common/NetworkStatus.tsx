@@ -18,11 +18,11 @@ const NetworkStatus: React.FC<NetworkStatusProps> = ({
     // Subscribe to network state updates
     const unsubscribe = NetInfo.addEventListener(state => {
       const connected = state.isConnected ?? false;
-      
+
       // Show banner when going offline or if showOnlineStatus is true
       if (!connected || (connected && showOnlineStatus && isConnected === false)) {
         setShowBanner(true);
-        
+
         // Auto-hide online banner after 3 seconds
         if (connected && showOnlineStatus) {
           setTimeout(() => setShowBanner(false), 3000);
@@ -30,7 +30,7 @@ const NetworkStatus: React.FC<NetworkStatusProps> = ({
       } else if (connected && !showOnlineStatus) {
         setShowBanner(false);
       }
-      
+
       setIsConnected(connected);
     });
 
@@ -53,11 +53,11 @@ const NetworkStatus: React.FC<NetworkStatusProps> = ({
       icon={isConnected ? 'wifi' : 'wifi-off'}
       style={[
         styles.banner,
-        isConnected ? styles.onlineBanner : styles.offlineBanner
+        isConnected ? styles.onlineBanner : styles.offlineBanner,
       ]}
     >
       <Text style={hebrewTextStyle}>
-        {isConnected 
+        {isConnected
           ? 'חזרת להיות מחובר לאינטרנט'
           : 'אין חיבור לאינטרנט. הנתונים יישמרו מקומית ויסונכרנו כשהחיבור יחזור.'
         }

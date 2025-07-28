@@ -159,12 +159,12 @@ describe('Error Handling Integration Tests', () => {
 
   it('recovers from network errors', async () => {
     const NetInfo = require('@react-native-community/netinfo');
-    
+
     // Start offline
     NetInfo.fetch.mockResolvedValue({ isConnected: false });
-    
+
     const { getByText, rerender } = render(<App />, { wrapper: TestWrapper });
-    
+
     // Should show offline state
     await waitFor(() => {
       expect(getByText(/אין חיבור לאינטרנט/)).toBeTruthy();
@@ -172,7 +172,7 @@ describe('Error Handling Integration Tests', () => {
 
     // Go back online
     NetInfo.fetch.mockResolvedValue({ isConnected: true });
-    
+
     // Should show online state
     await waitFor(() => {
       expect(getByText(/חזרת להיות מחובר/)).toBeTruthy();
@@ -183,18 +183,18 @@ describe('Error Handling Integration Tests', () => {
 describe('Performance Tests', () => {
   it('renders app within performance budget', async () => {
     const startTime = Date.now();
-    
+
     render(<App />, { wrapper: TestWrapper });
-    
+
     const renderTime = Date.now() - startTime;
-    
+
     // Should render within 1000ms
     expect(renderTime).toBeLessThan(1000);
   });
 
   it('handles large suggestion lists efficiently', async () => {
     const { googleSheetsService } = require('../../src/services/googleSheets/GoogleSheetsService');
-    
+
     // Mock large suggestion list
     const largeStudentList = Array.from({ length: 1000 }, (_, i) => `תלמיד ${i}`);
     googleSheetsService.getUniqueStudentNames.mockResolvedValue(largeStudentList);

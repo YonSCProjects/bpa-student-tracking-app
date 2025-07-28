@@ -16,7 +16,7 @@ type DataEntryScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Da
 const DataEntryScreen: React.FC = () => {
   const navigation = useNavigation<DataEntryScreenNavigationProp>();
   const route = useRoute<DataEntryScreenRouteProp>();
-  
+
   const {
     studentSuggestions,
     classSuggestions,
@@ -28,11 +28,11 @@ const DataEntryScreen: React.FC = () => {
     loadClassSuggestions,
   } = useGoogleSheets();
 
-  const { 
-    currentRecord, 
-    isEditMode, 
-    setCurrentRecord, 
-    setEditMode 
+  const {
+    currentRecord,
+    isEditMode,
+    setCurrentRecord,
+    setEditMode,
   } = useDataStore();
 
   const [initialFormData, setInitialFormData] = useState<Partial<StudentRecord> | undefined>();
@@ -44,7 +44,7 @@ const DataEntryScreen: React.FC = () => {
     שם_הכיתה: string,
     מספר_השיעור: number
   ) => {
-    if (!תאריך || !שם_התלמיד || !שם_הכיתה || !מספר_השיעור) return;
+    if (!תאריך || !שם_התלמיד || !שם_הכיתה || !מספר_השיעור) {return;}
 
     try {
       const existingRecord = await findMatchingRecord(
@@ -100,12 +100,12 @@ const DataEntryScreen: React.FC = () => {
   const handleSubmit = async (data: StudentRecord, isUpdate: boolean) => {
     try {
       const success = await saveRecord(data, isUpdate || isEditMode);
-      
+
       if (success) {
         // Clear form state
         setCurrentRecord(null);
         setEditMode(false);
-        
+
         // Navigate back to home
         navigation.navigate('Home');
       }

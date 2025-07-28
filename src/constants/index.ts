@@ -25,11 +25,11 @@ export const FIELD_RANGES = {
 
 export const SCORING_FIELDS: (keyof typeof FIELD_RANGES)[] = [
   'כניסה',
-  'שהייה', 
+  'שהייה',
   'אווירה',
   'ביצוע',
   'מטרה_אישית',
-  'בונוס'
+  'בונוס',
 ];
 
 export const MAXIMUM_SCORE = 11;
@@ -40,22 +40,22 @@ export const SPREADSHEET_NAME = 'BPApp';
 
 export const SHEET_HEADERS = [
   'תאריך',
-  'שם התלמיד', 
+  'שם התלמיד',
   'שם הכיתה',
   'מספר השיעור',
   'כניסה',
   'שהייה',
-  'אווירה', 
+  'אווירה',
   'ביצוע',
   'מטרה אישית',
   'בונוס',
   'סה"כ',
-  'הערות'
+  'הערות',
 ];
 
 export const GOOGLE_SCOPES = [
   'https://www.googleapis.com/auth/spreadsheets',
-  'https://www.googleapis.com/auth/drive.file'
+  'https://www.googleapis.com/auth/drive.file',
 ];
 
 export const HEBREW_FONT_FAMILY = 'Assistant-Regular';

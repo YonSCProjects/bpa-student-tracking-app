@@ -29,13 +29,13 @@ export const useGoogleSheets = () => {
   }, [isAuthenticated, spreadsheetId]);
 
   const initializeSpreadsheet = useCallback(async () => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {return;}
 
     setLoadingData(true);
     try {
       const id = await googleSheetsService.findOrCreateSpreadsheet();
       setSpreadsheetId(id);
-      
+
       // Load initial suggestions
       await loadSuggestions(id);
     } catch (error) {
@@ -48,7 +48,7 @@ export const useGoogleSheets = () => {
 
   const loadSuggestions = useCallback(async (sheetId?: string) => {
     const targetId = sheetId || spreadsheetId;
-    if (!targetId) return;
+    if (!targetId) {return;}
 
     try {
       const [studentNames, classNames] = await Promise.all([
@@ -81,7 +81,7 @@ export const useGoogleSheets = () => {
     שם_הכיתה: string,
     מספר_השיעור: number
   ): Promise<StudentRecord | null> => {
-    if (!spreadsheetId) return null;
+    if (!spreadsheetId) {return null;}
 
     try {
       const match = await googleSheetsService.findMatchingRecord(
@@ -132,12 +132,12 @@ export const useGoogleSheets = () => {
 
       // Reload suggestions to include new data
       await loadSuggestions();
-      
+
       Alert.alert(
         t('success'),
         isUpdate ? t('entryUpdated') : t('entryCreated')
       );
-      
+
       return true;
     } catch (error) {
       console.error('Failed to save record:', error);
@@ -149,7 +149,7 @@ export const useGoogleSheets = () => {
   }, [spreadsheetId, loadSuggestions]);
 
   const getNextClassNumber = useCallback(async (date: string): Promise<number> => {
-    if (!spreadsheetId) return 1;
+    if (!spreadsheetId) {return 1;}
 
     try {
       return await googleSheetsService.getNextClassNumber(spreadsheetId, date);
@@ -160,7 +160,7 @@ export const useGoogleSheets = () => {
   }, [spreadsheetId]);
 
   const loadStudentSuggestions = useCallback(async (query: string) => {
-    if (query.length < 2 || !spreadsheetId) return;
+    if (query.length < 2 || !spreadsheetId) {return;}
 
     try {
       const allStudents = await googleSheetsService.getUniqueStudentNames(spreadsheetId);
@@ -174,7 +174,7 @@ export const useGoogleSheets = () => {
 
       // Merge with existing suggestions
       const combined = [...studentSuggestions, ...filtered]
-        .filter((item, index, arr) => 
+        .filter((item, index, arr) =>
           arr.findIndex(i => i.value === item.value) === index
         );
 
@@ -185,7 +185,7 @@ export const useGoogleSheets = () => {
   }, [spreadsheetId, studentSuggestions]);
 
   const loadClassSuggestions = useCallback(async (query: string) => {
-    if (query.length < 2 || !spreadsheetId) return;
+    if (query.length < 2 || !spreadsheetId) {return;}
 
     try {
       const allClasses = await googleSheetsService.getUniqueClassNames(spreadsheetId);
@@ -199,7 +199,7 @@ export const useGoogleSheets = () => {
 
       // Merge with existing suggestions
       const combined = [...classSuggestions, ...filtered]
-        .filter((item, index, arr) => 
+        .filter((item, index, arr) =>
           arr.findIndex(i => i.value === item.value) === index
         );
 
@@ -216,7 +216,7 @@ export const useGoogleSheets = () => {
     classSuggestions,
     isLoadingData,
     isSaving,
-    
+
     // Actions
     initializeSpreadsheet,
     findMatchingRecord,

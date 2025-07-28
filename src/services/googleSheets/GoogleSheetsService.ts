@@ -25,7 +25,7 @@ class GoogleSheetsService {
 
   private async makeAuthenticatedRequest(url: string, options: RequestInit = {}): Promise<Response> {
     const accessToken = await googleAuthService.refreshAccessToken();
-    
+
     if (!accessToken) {
       throw new Error('No valid access token available');
     }
@@ -73,7 +73,7 @@ class GoogleSheetsService {
 
   private async createSpreadsheet(): Promise<string> {
     const createURL = `${this.baseURL}`;
-    
+
     const spreadsheetData = {
       properties: {
         title: SPREADSHEET_NAME,
@@ -100,14 +100,14 @@ class GoogleSheetsService {
 
     // Add headers
     await this.setHeaders(spreadsheetId);
-    
+
     return spreadsheetId;
   }
 
   private async ensureHeadersExist(spreadsheetId: string): Promise<void> {
     try {
       const data = await this.getSheetData(spreadsheetId, 'נתונים!A1:L1');
-      
+
       if (!data.values || data.values.length === 0 || data.values[0].length === 0) {
         await this.setHeaders(spreadsheetId);
       }
@@ -125,7 +125,7 @@ class GoogleSheetsService {
     };
 
     const updateURL = `${this.baseURL}/${spreadsheetId}/values/נתונים!A1:L1?valueInputOption=RAW`;
-    
+
     await this.makeAuthenticatedRequest(updateURL, {
       method: 'PUT',
       body: JSON.stringify(headerData),
@@ -141,7 +141,7 @@ class GoogleSheetsService {
   async getAllRecords(spreadsheetId: string): Promise<StudentRecord[]> {
     try {
       const data = await this.getSheetData(spreadsheetId, 'נתונים!A2:L1000');
-      
+
       if (!data.values || data.values.length === 0) {
         return [];
       }
@@ -175,10 +175,10 @@ class GoogleSheetsService {
   ): Promise<RecordMatch | null> {
     try {
       const records = await this.getAllRecords(spreadsheetId);
-      
+
       for (let i = 0; i < records.length; i++) {
         const record = records[i];
-        
+
         // 4-field exact match logic
         if (
           record.תאריך === תאריך &&
@@ -192,7 +192,7 @@ class GoogleSheetsService {
           };
         }
       }
-      
+
       return null;
     } catch (error) {
       console.error('Error finding matching record:', error);
@@ -228,7 +228,7 @@ class GoogleSheetsService {
       };
 
       const updateURL = `${this.baseURL}/${spreadsheetId}/values/נתונים!A${nextRow}:L${nextRow}?valueInputOption=RAW`;
-      
+
       await this.makeAuthenticatedRequest(updateURL, {
         method: 'PUT',
         body: JSON.stringify(updateData),
@@ -263,7 +263,7 @@ class GoogleSheetsService {
       };
 
       const updateURL = `${this.baseURL}/${spreadsheetId}/values/נתונים!A${rowIndex}:L${rowIndex}?valueInputOption=RAW`;
-      
+
       await this.makeAuthenticatedRequest(updateURL, {
         method: 'PUT',
         body: JSON.stringify(updateData),
@@ -277,14 +277,14 @@ class GoogleSheetsService {
   async getUniqueStudentNames(spreadsheetId: string): Promise<string[]> {
     try {
       const data = await this.getSheetData(spreadsheetId, 'נתונים!B2:B1000');
-      
-      if (!data.values) return [];
-      
+
+      if (!data.values) {return [];}
+
       const names = data.values
         .map(row => row[0])
         .filter(name => name && name.trim() !== '')
         .filter((name, index, arr) => arr.indexOf(name) === index); // unique values
-      
+
       return names;
     } catch (error) {
       console.error('Error getting student names:', error);
@@ -295,14 +295,14 @@ class GoogleSheetsService {
   async getUniqueClassNames(spreadsheetId: string): Promise<string[]> {
     try {
       const data = await this.getSheetData(spreadsheetId, 'נתונים!C2:C1000');
-      
-      if (!data.values) return [];
-      
+
+      if (!data.values) {return [];}
+
       const classes = data.values
         .map(row => row[0])
         .filter(className => className && className.trim() !== '')
         .filter((className, index, arr) => arr.indexOf(className) === index); // unique values
-      
+
       return classes;
     } catch (error) {
       console.error('Error getting class names:', error);
@@ -313,21 +313,21 @@ class GoogleSheetsService {
   async getNextClassNumber(spreadsheetId: string, date: string): Promise<number> {
     try {
       const records = await this.getAllRecords(spreadsheetId);
-      
+
       const todayRecords = records.filter(record => record.תאריך === date);
-      
-      if (todayRecords.length === 0) return 1;
-      
+
+      if (todayRecords.length === 0) {return 1;}
+
       const usedNumbers = todayRecords.map(record => record.מספר_השיעור);
       const maxNumber = Math.max(...usedNumbers);
-      
+
       // Find first available number or next sequential
       for (let i = 1; i <= 7; i++) {
         if (!usedNumbers.includes(i)) {
           return i;
         }
       }
-      
+
       return Math.min(maxNumber + 1, 7);
     } catch (error) {
       console.error('Error getting next class number:', error);

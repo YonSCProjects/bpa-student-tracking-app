@@ -94,20 +94,20 @@ class SyncService {
           result.synced++;
         } catch (error: any) {
           console.error(`Failed to sync record ${record.id}:`, error);
-          
+
           // Update sync attempts
           await offlineStorageService.updatePendingRecordSyncAttempts(record.id);
-          
+
           result.failed++;
           result.errors.push(`Failed to sync ${record.שם_התלמיד}: ${error.message}`);
         }
       }
 
       result.success = result.failed === 0;
-      
+
       // Notify callbacks
       this.notifyCallbacks(result);
-      
+
       return result;
     } catch (error: any) {
       console.error('Sync failed:', error);
@@ -122,11 +122,11 @@ class SyncService {
   async syncInBackground(): Promise<void> {
     try {
       const settings = await offlineStorageService.getAppSettings();
-      
-      if (!settings.autoSync) return;
-      
+
+      if (!settings.autoSync) {return;}
+
       const pendingCount = await offlineStorageService.getPendingRecordCount();
-      if (pendingCount === 0) return;
+      if (pendingCount === 0) {return;}
 
       if (await this.isOnline()) {
         await this.syncPendingRecords();
@@ -139,7 +139,7 @@ class SyncService {
 
   onSyncComplete(callback: (result: SyncResult) => void): () => void {
     this.syncCallbacks.push(callback);
-    
+
     // Return unsubscribe function
     return () => {
       const index = this.syncCallbacks.indexOf(callback);
@@ -205,7 +205,7 @@ class SyncService {
     try {
       const pendingRecords = await offlineStorageService.getPendingRecords();
       const settings = await offlineStorageService.getAppSettings();
-      
+
       // Reset sync attempts for records under max attempts
       for (const record of pendingRecords) {
         if (record.syncAttempts < settings.maxSyncAttempts) {

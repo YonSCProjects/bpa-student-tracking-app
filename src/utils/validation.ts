@@ -60,7 +60,7 @@ export const validateStudentRecord = (record: Partial<StudentRecord>): Validatio
   Object.entries(FIELD_RANGES).forEach(([field, range]) => {
     const fieldKey = field as keyof typeof FIELD_RANGES;
     const value = record[fieldKey];
-    
+
     if (typeof value === 'number') {
       if (value < range.min || value > range.max) {
         errors.push({
@@ -104,7 +104,7 @@ export const validateField = (
 ): ValidationError | null => {
   const record = { [field]: value } as Partial<StudentRecord>;
   const result = validateStudentRecord(record);
-  
+
   const fieldError = result.errors.find(error => error.field === field);
   return fieldError || null;
 };
@@ -119,7 +119,7 @@ const getFieldLabel = (field: keyof typeof FIELD_RANGES): string => {
     מטרה_אישית: t('personalGoal'),
     בונוס: t('bonus'),
   };
-  
+
   return labelMap[field] || field;
 };
 

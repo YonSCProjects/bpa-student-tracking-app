@@ -3,6 +3,10 @@ import { HEBREW_FONT_FAMILY } from '@/constants';
 
 const fontConfig = {
   fontFamily: HEBREW_FONT_FAMILY,
+  letterSpacing: 0,
+  fontWeight: '400' as const,
+  lineHeight: 20,
+  fontSize: 14,
 };
 
 const fonts = configureFonts({

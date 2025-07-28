@@ -14,10 +14,10 @@ const App: React.FC = () => {
   useEffect(() => {
     // Performance monitoring
     performanceMonitor.mark('app-start');
-    
+
     // Ensure RTL is enabled for Hebrew
     forceRTL();
-    
+
     // Log app initialization
     if (__DEV__) {
       console.log('BPApp initialized successfully');

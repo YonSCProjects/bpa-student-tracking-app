@@ -29,7 +29,7 @@ describe('Validation Utils', () => {
       const result = validateStudentRecord(record);
       expect(result.isValid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
-      
+
       const errorFields = result.errors.map(e => e.field);
       expect(errorFields).toContain('תאריך');
       expect(errorFields).toContain('שם_התלמיד');
@@ -45,7 +45,7 @@ describe('Validation Utils', () => {
 
       const result = validateStudentRecord(record);
       expect(result.isValid).toBe(false);
-      
+
       const nameError = result.errors.find(e => e.field === 'שם_התלמיד');
       expect(nameError).toBeDefined();
       expect(nameError?.message).toContain('עברית');
@@ -63,7 +63,7 @@ describe('Validation Utils', () => {
 
       const result = validateStudentRecord(record);
       expect(result.isValid).toBe(false);
-      
+
       const errorFields = result.errors.map(e => e.field);
       expect(errorFields).toContain('מספר_השיעור');
       expect(errorFields).toContain('כניסה');
@@ -79,7 +79,7 @@ describe('Validation Utils', () => {
 
       const result = validateStudentRecord(record);
       expect(result.isValid).toBe(false);
-      
+
       const dateError = result.errors.find(e => e.field === 'תאריך');
       expect(dateError).toBeDefined();
     });

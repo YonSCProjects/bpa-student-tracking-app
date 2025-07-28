@@ -1,3 +1,7 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 # BPApp - Hebrew Student Tracking System
 
 ## Project Overview
@@ -133,14 +137,20 @@ npm run android
 # Run on iOS
 npm run ios
 
-# Type checking
+# Type checking (ALWAYS run before committing)
 npm run tsc
 
-# Linting
+# Linting (ALWAYS run before committing)
 npm run lint
 
 # Testing
 npm run test
+
+# Run specific test file
+npm run test -- __tests__/components/StudentDataForm.test.tsx
+
+# Run tests in watch mode
+npm run test -- --watch
 ```
 
 ### Build & Release
@@ -155,36 +165,65 @@ npm run build:android:release
 npm run build:ios
 ```
 
-## Project Structure
+## Project Structure & Architecture
+
+### Key Architecture Decisions
+- **State Management**: Zustand stores (authStore.ts, dataStore.ts) for lightweight, non-boilerplate state management
+- **Path Aliases**: `@/` prefix for all imports using TypeScript path mapping in tsconfig.json
+- **RTL Support**: Forced RTL direction in App.tsx using `forceRTL()` utility
+- **Error Handling**: Global ErrorBoundary wraps entire app with performance monitoring
+- **Testing**: Jest with React Native Testing Library, transformIgnorePatterns for React Native modules
+
+### Directory Structure
 ```
 src/
 ├── components/          # Reusable UI components
-│   ├── forms/          # Form-specific components
-│   ├── inputs/         # Input field components
-│   └── common/         # Common UI elements
-├── screens/            # App screens
-├── services/           # API and external services
-│   ├── googleSheets/   # Google Sheets integration
-│   └── auth/          # Authentication logic
+│   ├── forms/          # StudentDataForm, RecordMatchingForm
+│   ├── inputs/         # HebrewTextInput, HebrewNumberPicker, HebrewDatePicker, HebrewAutocompleteInput  
+│   └── common/         # ErrorBoundary, LoadingOverlay, NetworkStatus, SyncStatus
+├── screens/            # AuthScreen, DataEntryScreen, HomeScreen
+├── services/           # External integrations
+│   ├── googleSheets/   # GoogleSheetsService with CRUD operations
+│   ├── auth/          # GoogleAuthService with OAuth flow
+│   ├── storage/       # OfflineStorageService with MMKV
+│   └── sync/          # SyncService for data synchronization
+├── store/             # Zustand state management
+│   ├── authStore.ts   # Authentication state & user data
+│   └── dataStore.ts   # Form data, autocomplete suggestions, loading states
 ├── utils/             # Helper functions
-├── types/             # TypeScript type definitions
-├── constants/         # App constants
-├── localization/      # Hebrew language files
-└── assets/           # Images, fonts, etc.
+│   ├── scoring.ts     # calculateTotalScore, score color/description logic
+│   ├── validation.ts  # Form validation with Hebrew error messages
+│   ├── rtl.ts         # RTL direction utilities
+│   └── performance.ts # Performance monitoring utilities
+├── types/             # TypeScript definitions
+│   └── index.ts       # StudentRecord, FormData, GoogleSheetsConfig interfaces
+├── constants/         # App constants and configuration
+├── localization/      # Hebrew language files (i18n-js)
+├── navigation/        # React Navigation setup
+├── styles/           # Theme configuration
+└── config/           # Environment and app configuration
 ```
 
 ## Google Sheets Integration
 
-### Authentication Flow
-1. Google OAuth 2.0 setup
-2. Request sheets.spreadsheets scope
-3. Store refresh tokens securely
+### Core Service Architecture
+- **GoogleSheetsService**: Main service class in `src/services/googleSheets/GoogleSheetsService.ts`
+- **Authentication**: Integrated with GoogleAuthService for token management
+- **Error Handling**: Comprehensive error handling with Hebrew error messages
+- **Rate Limiting**: Built-in handling for Google Sheets API limits (100 requests/100 seconds/user)
 
-### Sheet Operations
-- **Create**: New "BPApp" sheet per user
-- **Read**: Fetch existing records for matching
-- **Update**: Modify existing rows
-- **Append**: Add new records
+### Key Service Methods
+- `findExistingSpreadsheet()`: Searches user's Drive for "BPApp" spreadsheet
+- `createSpreadsheet()`: Creates new spreadsheet with Hebrew headers
+- `findMatchingRecord()`: Implements 4-field matching logic (תאריך + שם התלמיד + שם הכיתה + מספר השיעור)
+- `updateRecord()` / `appendRecord()`: Update existing or create new records
+- `fetchAutocompleteData()`: Loads student/class suggestions for autocomplete
+
+### Authentication Flow
+1. Google OAuth 2.0 setup via @react-native-google-signin/google-signin
+2. Request sheets.spreadsheets scope
+3. Store refresh tokens securely using react-native-keychain
+4. Automatic token refresh handled by GoogleAuthService
 
 ### Data Schema
 | תאריך | שם התלמיד | שם הכיתה | מספר השיעור | כניסה | שהייה | אווירה | ביצוע | מטרה אישית | בונוס | סה"כ | הערות |
@@ -288,11 +327,36 @@ Exact Match Found?
 └─ NO → Blank form → Create mode → Add new row
 ```
 
+## Development Workflow & Testing
+
+### Code Quality Requirements
+- **TypeScript**: Strict mode enabled, path aliases configured with `@/` prefix
+- **Linting**: ESLint with @react-native config, TypeScript parser
+- **Testing**: Comprehensive test suite with Jest + React Native Testing Library
+- **Performance**: Built-in performance monitoring in App.tsx initialization
+
+### Test Structure
+```
+__tests__/
+├── components/          # Component unit tests
+├── services/           # Service integration tests  
+├── utils/             # Utility function tests
+├── hooks/             # Custom hook tests
+├── integration/       # Full flow integration tests
+└── e2e/              # End-to-end Hebrew/RTL tests
+```
+
+### Key Testing Patterns
+- Hebrew RTL layout testing in `__tests__/e2e/hebrewRTL.test.ts`
+- Google Sheets service mocking in integration tests
+- Form validation testing with Hebrew error messages
+- Scoring calculation unit tests with edge cases
+
 ## Known Issues & Limitations
 - iOS Hebrew keyboard behavior variations
-- Android RTL layout edge cases with keyboards
+- Android RTL layout edge cases with keyboards  
 - Google Sheets API rate limits (100 requests/100 seconds/user)
-- Offline mode requires additional caching implementation
+- Offline mode requires additional caching implementation (OfflineStorageService exists)
 - Hebrew date formatting cross-platform differences
 
 ## Environment Variables

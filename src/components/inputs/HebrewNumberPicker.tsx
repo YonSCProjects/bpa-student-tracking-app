@@ -94,7 +94,7 @@ const HebrewNumberPicker: React.FC<HebrewNumberPickerProps> = ({
           </View>
         </View>
       </TouchableOpacity>
-      
+
       {error && (
         <Text style={[styles.errorText, hebrewTextStyle]}>
           {error}
@@ -112,7 +112,7 @@ const HebrewNumberPicker: React.FC<HebrewNumberPickerProps> = ({
               <Text variant="titleMedium" style={[styles.modalTitle, hebrewTextStyle]}>
                 {label}
               </Text>
-              
+
               <View style={styles.pickerContainer}>
                 <IconButton
                   icon="plus"
@@ -121,7 +121,7 @@ const HebrewNumberPicker: React.FC<HebrewNumberPickerProps> = ({
                   disabled={tempValue >= max}
                   style={styles.pickerButton}
                 />
-                
+
                 <View style={styles.valueDisplay}>
                   <Text variant="headlineLarge" style={[styles.pickerValue, hebrewTextStyle]}>
                     {getDisplayValue(tempValue)}
@@ -130,7 +130,7 @@ const HebrewNumberPicker: React.FC<HebrewNumberPickerProps> = ({
                     {getValueDescription(tempValue)}
                   </Text>
                 </View>
-                
+
                 <IconButton
                   icon="minus"
                   size={32}
@@ -139,13 +139,13 @@ const HebrewNumberPicker: React.FC<HebrewNumberPickerProps> = ({
                   style={styles.pickerButton}
                 />
               </View>
-              
+
               <View style={styles.rangeIndicator}>
                 <Text style={[styles.rangeText, hebrewTextStyle]}>
                   טווח: {min} - {max}
                 </Text>
               </View>
-              
+
               <View style={styles.modalActions}>
                 <Button
                   mode="outlined"
@@ -154,7 +154,7 @@ const HebrewNumberPicker: React.FC<HebrewNumberPickerProps> = ({
                 >
                   <Text style={hebrewTextStyle}>{t('cancel')}</Text>
                 </Button>
-                
+
                 <Button
                   mode="contained"
                   onPress={handleConfirm}

@@ -12,16 +12,16 @@ export const useAuthStore = create<AuthStore>((set) => ({
   isAuthenticated: false,
   user: undefined,
   tokens: undefined,
-  
+
   setAuthenticated: (authenticated: boolean) =>
     set({ isAuthenticated: authenticated }),
-    
+
   setUser: (user: AuthState['user']) =>
     set({ user }),
-    
+
   setTokens: (tokens: AuthState['tokens']) =>
     set({ tokens }),
-    
+
   signOut: () =>
     set({
       isAuthenticated: false,

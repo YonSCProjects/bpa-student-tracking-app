@@ -16,18 +16,18 @@ const AuthScreen: React.FC = () => {
     setIsLoading(true);
     try {
       const { user, tokens } = await googleAuthService.signIn();
-      
+
       setUser({
         id: user.id,
         email: user.email,
         name: user.name,
       });
-      
+
       setTokens({
         accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken,
+        refreshToken: tokens.refreshToken || '',
       });
-      
+
       setAuthenticated(true);
     } catch (error: any) {
       console.error('Authentication error:', error);

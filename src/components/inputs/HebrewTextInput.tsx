@@ -44,13 +44,13 @@ const HebrewTextInput: React.FC<HebrewTextInputProps> = ({
         numberOfLines={numberOfLines}
         maxLength={maxLength}
       />
-      
+
       {error && (
         <Text style={[styles.errorText, hebrewTextStyle]}>
           {error}
         </Text>
       )}
-      
+
       {maxLength && (
         <Text style={[styles.counterText, hebrewTextStyle]}>
           {value.length} / {maxLength}

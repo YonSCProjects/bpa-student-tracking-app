@@ -47,9 +47,9 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       if (this.props.fallback) {
         const FallbackComponent = this.props.fallback;
         return (
-          <FallbackComponent 
-            error={this.state.error} 
-            resetError={this.resetError} 
+          <FallbackComponent
+            error={this.state.error}
+            resetError={this.resetError}
           />
         );
       }
@@ -61,7 +61,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
               <Text variant="headlineSmall" style={[styles.title, hebrewTextStyle]}>
                 שגיאה במערכת
               </Text>
-              
+
               <Text variant="bodyMedium" style={[styles.message, hebrewTextStyle]}>
                 אירעה שגיאה לא צפויה באפליקציה. אנא נסה שוב או צור קשר עם התמיכה.
               </Text>
